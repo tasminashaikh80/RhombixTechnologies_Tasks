@@ -10,16 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ArtistsRouteImport } from './routes/artists'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as ArtistUsernameRouteImport } from './routes/artist.$username'
 import { Route as ArtworkIdRouteImport } from './routes/artwork.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArtistsRoute = ArtistsRouteImport.update({
@@ -42,6 +49,17 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ArtistUsernameRoute = ArtistUsernameRouteImport.update({
   id: '/artist/$username',
   path: '/artist/$username',
@@ -59,6 +77,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/artist/$username': typeof ArtistUsernameRoute
   '/artwork/$id': typeof ArtworkIdRoute
 }
@@ -68,16 +88,21 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/artist/$username': typeof ArtistUsernameRoute
   '/artwork/$id': typeof ArtworkIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/artists': typeof ArtistsRoute
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/artist/$username': typeof ArtistUsernameRoute
   '/artwork/$id': typeof ArtworkIdRoute
 }
@@ -89,6 +114,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/explore'
     | '/reset-password'
+    | '/notifications'
+    | '/upload'
     | '/artist/$username'
     | '/artwork/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -98,21 +125,27 @@ export interface FileRouteTypes {
     | '/auth'
     | '/explore'
     | '/reset-password'
+    | '/notifications'
+    | '/upload'
     | '/artist/$username'
     | '/artwork/$id'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/artists'
     | '/auth'
     | '/explore'
     | '/reset-password'
+    | '/_authenticated/notifications'
+    | '/_authenticated/upload'
     | '/artist/$username'
     | '/artwork/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ArtistsRoute: typeof ArtistsRoute
   AuthRoute: typeof AuthRoute
   ExploreRoute: typeof ExploreRoute
@@ -128,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/artists': {
@@ -158,6 +198,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/upload': {
+      id: '/_authenticated/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/artist/$username': {
       id: '/artist/$username'
       path: '/artist/$username'
@@ -175,8 +229,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedUploadRoute: AuthenticatedUploadRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ArtistsRoute: ArtistsRoute,
   AuthRoute: AuthRoute,
   ExploreRoute: ExploreRoute,

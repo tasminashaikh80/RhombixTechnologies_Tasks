@@ -157,7 +157,7 @@ function UploadPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.filter((item) => item !== "All").map((item) => (
+                  {CATEGORIES.map((item) => (
                     <SelectItem key={item} value={item}>
                       {item}
                     </SelectItem>
