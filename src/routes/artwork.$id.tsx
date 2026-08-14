@@ -15,18 +15,64 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtwork, fetchArtworks, initials, notify } from "@/lib/gallery";
 
+const SITE = "https://chroma-spark-show.lovable.app";
+const absolute = (url: string | null | undefined) =>
+  !url ? null : url.startsWith("http") ? url : url.startsWith("/") ? `${SITE}${url}` : null;
+
 export const Route = createFileRoute("/artwork/$id")({
-  head: () => ({
-    meta: [
-      { title: "Artwork — Lumen" },
-      {
-        name: "description",
-        content: "View this piece in full, read the story behind it, and join the conversation.",
-      },
-      { property: "og:title", content: "Artwork — Lumen" },
-      { property: "og:description", content: "A digital artwork published on Lumen." },
-    ],
-  }),
+  loader: ({ params }) => fetchArtwork(params.id),
+  head: ({ params, loaderData }) => {
+    const art = loaderData ?? null;
+    const artist = art?.profiles?.display_name ?? "a Lumen artist";
+    const title = art ? `${art.title} by ${artist} — Lumen` : "Artwork — Lumen";
+    const description = art
+      ? (art.description?.slice(0, 155) ??
+        `${art.title}, a ${art.category.toLowerCase()} piece by ${artist} on Lumen.`)
+      : "View this piece in full, read the story behind it, and join the conversation.";
+    const url = `${SITE}/artwork/${params.id}`;
+    const image = absolute(art?.image_url);
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: art
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "VisualArtwork",
+                name: art.title,
+                description: art.description ?? undefined,
+                image: image ?? undefined,
+                url,
+                artform: art.category,
+                artMedium: "Digital",
+                keywords: art.tags?.join(", ") || undefined,
+                dateCreated: art.creation_date ?? art.created_at,
+                creator: {
+                  "@type": "Person",
+                  name: artist,
+                  url: art.profiles ? `${SITE}/artist/${art.profiles.username}` : undefined,
+                },
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: ArtworkDetail,
 });
 
