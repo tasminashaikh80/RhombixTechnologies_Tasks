@@ -103,6 +103,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Lumen",
+            url: "https://chroma-spark-show.lovable.app",
+            description:
+              "Lumen is a digital art community where artists showcase portfolios and enthusiasts discover, follow, like and save artwork.",
+            potentialAction: {
+              "@type": "SearchAction",
+              target:
+                "https://chroma-spark-show.lovable.app/explore?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Lumen",
+            url: "https://chroma-spark-show.lovable.app",
+          },
+        ]),
+      },
+    ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
