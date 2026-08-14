@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: myArtworks = [] } = useQuery({
@@ -194,7 +194,10 @@ function Dashboard() {
           </TabsContent>
 
           <TabsContent value="profile" className="mt-8">
-            <ProfileForm profile={profile} onSaved={refreshProfile} />
+            <ProfileForm
+              profile={profile}
+              onSaved={() => queryClient.invalidateQueries({ queryKey: ["me", "profile"] })}
+            />
           </TabsContent>
         </Tabs>
       </div>
