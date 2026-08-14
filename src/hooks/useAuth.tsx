@@ -36,7 +36,7 @@ async function ensureProfile(user: User): Promise<Profile | null> {
     .insert({
       id: user.id,
       username,
-      display_name: (meta["display_name"] as string | undefined) ?? base,
+      display_name: displayName,
       account_type: (meta["account_type"] as "artist" | "enthusiast" | undefined) ?? "enthusiast",
       avatar_url: (meta["avatar_url"] as string | undefined) ?? null,
     })
