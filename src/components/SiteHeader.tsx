@@ -45,7 +45,7 @@ export function SiteHeader() {
     queryClient.clear();
     await supabase.auth.signOut();
     router.invalidate();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/auth", search: { mode: "login" }, replace: true });
   }
 
   return (
@@ -61,6 +61,7 @@ export function SiteHeader() {
         <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
           <Link
             to="/explore"
+            search={{ q: "", category: "All", sort: "newest" }}
             className="rounded-full px-3 py-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             activeProps={{ className: "text-foreground bg-secondary" }}
           >
@@ -160,7 +161,7 @@ export function SiteHeader() {
           ) : (
             <>
               <Button variant="ghost" asChild className="hidden sm:inline-flex">
-                <Link to="/auth">Log in</Link>
+                <Link to="/auth" search={{ mode: "login" }}>Log in</Link>
               </Button>
               <Button asChild className="rounded-full">
                 <Link to="/auth" search={{ mode: "signup" }}>
