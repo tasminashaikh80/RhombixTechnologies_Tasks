@@ -31,7 +31,9 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "A gallery-grade home for digital painting, illustration, 3D art and photography.",
       },
+      { property: "og:url", content: "https://chroma-spark-show.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://chroma-spark-show.lovable.app/" }],
   }),
   component: Home,
 });

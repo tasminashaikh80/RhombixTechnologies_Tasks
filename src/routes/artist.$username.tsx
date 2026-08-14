@@ -18,18 +18,62 @@ import {
   notify,
 } from "@/lib/gallery";
 
+const SITE = "https://chroma-spark-show.lovable.app";
+
 export const Route = createFileRoute("/artist/$username")({
-  head: () => ({
-    meta: [
-      { title: "Artist profile — Lumen" },
-      {
-        name: "description",
-        content: "Portfolio, specialties, followers and full gallery for this Lumen artist.",
-      },
-      { property: "og:title", content: "Artist profile — Lumen" },
-      { property: "og:description", content: "Browse this artist's portfolio on Lumen." },
-    ],
-  }),
+  loader: ({ params }) => fetchProfileByUsername(params.username),
+  head: ({ params, loaderData }) => {
+    const profile = loaderData ?? null;
+    const name = profile?.display_name ?? params.username;
+    const title = `${name} (@${params.username}) — Lumen`;
+    const description = profile?.bio?.slice(0, 155)
+      ? profile.bio.slice(0, 155)
+      : `Portfolio, specialties and full gallery for ${name} on Lumen.`;
+    const url = `${SITE}/artist/${params.username}`;
+    const image =
+      profile?.avatar_url && profile.avatar_url.startsWith("http") ? profile.avatar_url : null;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "profile" },
+        { property: "og:url", content: url },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: profile
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ProfilePage",
+                url,
+                mainEntity: {
+                  "@type": "Person",
+                  name,
+                  alternateName: profile.username,
+                  description: profile.bio ?? undefined,
+                  image: image ?? undefined,
+                  url,
+                  knowsAbout: profile.skills?.length ? profile.skills : undefined,
+                  sameAs: [profile.website, profile.twitter, profile.instagram].filter(
+                    Boolean,
+                  ) as string[],
+                },
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: ArtistProfile,
 });
 

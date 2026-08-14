@@ -39,7 +39,9 @@ export const Route = createFileRoute("/explore")({
         property: "og:description",
         content: "Browse the full Lumen gallery by category, keyword, artist or trend.",
       },
+      { property: "og:url", content: "https://chroma-spark-show.lovable.app/explore" },
     ],
+    links: [{ rel: "canonical", href: "https://chroma-spark-show.lovable.app/explore" }],
   }),
   component: Explore,
 });

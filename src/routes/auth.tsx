@@ -28,7 +28,9 @@ export const Route = createFileRoute("/auth")({
       },
       { property: "og:title", content: "Sign in or Join Lumen" },
       { property: "og:description", content: "Join the Lumen digital art community." },
+      { property: "og:url", content: "https://chroma-spark-show.lovable.app/auth" },
     ],
+    links: [{ rel: "canonical", href: "https://chroma-spark-show.lovable.app/auth" }],
   }),
   component: AuthPage,
 });

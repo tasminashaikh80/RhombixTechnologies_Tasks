@@ -15,7 +15,10 @@ export const Route = createFileRoute("/reset-password")({
       { name: "description", content: "Choose a new password for your Lumen account." },
       { property: "og:title", content: "Reset your Lumen password" },
       { property: "og:description", content: "Set a new password and get back to the gallery." },
+      { property: "og:url", content: "https://chroma-spark-show.lovable.app/reset-password" },
+      { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "canonical", href: "https://chroma-spark-show.lovable.app/reset-password" }],
   }),
   component: ResetPassword,
 });

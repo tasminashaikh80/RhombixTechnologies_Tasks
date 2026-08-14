@@ -123,7 +123,7 @@ export function SiteHeader() {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="ml-1 rounded-full ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <button aria-label="User menu" className="ml-1 rounded-full ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <Avatar className="size-9">
                       <AvatarImage src={profile?.avatar_url ?? undefined} alt="" />
                       <AvatarFallback>{initials(profile?.display_name ?? "You")}</AvatarFallback>
