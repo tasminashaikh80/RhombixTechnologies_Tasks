@@ -26,10 +26,11 @@ async function ensureProfile(user: User): Promise<Profile | null> {
   if (data) return data as Profile;
 
   const meta = user.user_metadata ?? {};
-  const base =
+  const base: string =
     (meta["username"] as string | undefined) ??
-    (user.email ? user.email.split("@")[0] : "member");
+    (user.email ? (user.email.split("@")[0] ?? "member") : "member");
   const username = `${base.replace(/[^a-z0-9_]/gi, "").toLowerCase() || "member"}_${user.id.slice(0, 4)}`;
+  const displayName: string = (meta["display_name"] as string | undefined) ?? base;
   const { data: created } = await supabase
     .from("profiles")
     .insert({
