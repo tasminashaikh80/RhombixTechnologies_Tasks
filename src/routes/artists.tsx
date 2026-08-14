@@ -19,6 +19,7 @@ export const Route = createFileRoute("/artists")({
       {
         property: "og:description",
         content: "Browse artist profiles, specialties and portfolios across the Lumen community.",
+      },
       { property: "og:url", content: "https://chroma-spark-show.lovable.app/artists" },
     ],
     links: [{ rel: "canonical", href: "https://chroma-spark-show.lovable.app/artists" }],
