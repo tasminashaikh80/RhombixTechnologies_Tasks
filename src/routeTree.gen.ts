@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArtistsRouteImport } from './routes/artists'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ArtistUsernameRouteImport } from './routes/artist.$username'
+import { Route as ArtworkIdRouteImport } from './routes/artwork.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +27,98 @@ const ArtistsRoute = ArtistsRouteImport.update({
   path: '/artists',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistUsernameRoute = ArtistUsernameRouteImport.update({
+  id: '/artist/$username',
+  path: '/artist/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtworkIdRoute = ArtworkIdRouteImport.update({
+  id: '/artwork/$id',
+  path: '/artwork/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/artists': typeof ArtistsRoute
+  '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/artist/$username': typeof ArtistUsernameRoute
+  '/artwork/$id': typeof ArtworkIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/artists': typeof ArtistsRoute
+  '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/artist/$username': typeof ArtistUsernameRoute
+  '/artwork/$id': typeof ArtworkIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/artists': typeof ArtistsRoute
+  '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/artist/$username': typeof ArtistUsernameRoute
+  '/artwork/$id': typeof ArtworkIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/artists' | '/explore'
+  fullPaths:
+    | '/'
+    | '/artists'
+    | '/auth'
+    | '/explore'
+    | '/reset-password'
+    | '/artist/$username'
+    | '/artwork/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/artists' | '/explore'
-  id: '__root__' | '/' | '/artists' | '/explore'
+  to:
+    | '/'
+    | '/artists'
+    | '/auth'
+    | '/explore'
+    | '/reset-password'
+    | '/artist/$username'
+    | '/artwork/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/artists'
+    | '/auth'
+    | '/explore'
+    | '/reset-password'
+    | '/artist/$username'
+    | '/artwork/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArtistsRoute: typeof ArtistsRoute
+  AuthRoute: typeof AuthRoute
   ExploreRoute: typeof ExploreRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ArtistUsernameRoute: typeof ArtistUsernameRoute
+  ArtworkIdRoute: typeof ArtworkIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +137,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtistsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artist/$username': {
+      id: '/artist/$username'
+      path: '/artist/$username'
+      fullPath: '/artist/$username'
+      preLoaderRoute: typeof ArtistUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artwork/$id': {
+      id: '/artwork/$id'
+      path: '/artwork/$id'
+      fullPath: '/artwork/$id'
+      preLoaderRoute: typeof ArtworkIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +178,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArtistsRoute: ArtistsRoute,
+  AuthRoute: AuthRoute,
   ExploreRoute: ExploreRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ArtistUsernameRoute: ArtistUsernameRoute,
+  ArtworkIdRoute: ArtworkIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
