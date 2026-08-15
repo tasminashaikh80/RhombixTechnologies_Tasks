@@ -7,6 +7,11 @@ type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
 
+type PublicBackendBindings = {
+  SUPABASE_URL?: string;
+  SUPABASE_PUBLISHABLE_KEY?: string;
+};
+
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 async function getServerEntry(): Promise<ServerEntry> {
@@ -44,12 +49,41 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+async function injectPublicBackendConfig(
+  response: Response,
+  env: PublicBackendBindings,
+): Promise<Response> {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("text/html")) return response;
+
+  const supabaseUrl = env.SUPABASE_URL ?? process.env["SUPABASE_URL"];
+  const publishableKey =
+    env.SUPABASE_PUBLISHABLE_KEY ?? process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!supabaseUrl || !publishableKey) return response;
+
+  const config = JSON.stringify({
+    SUPABASE_URL: supabaseUrl,
+    SUPABASE_PUBLISHABLE_KEY: publishableKey,
+  }).replaceAll("<", "\\u003c");
+  const body = await response.text();
+  const script = `<script>globalThis.__LOVABLE_PUBLIC_CONFIG__=${config}</script>`;
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+
+  return new Response(body.replace("</head>", `${script}</head>`), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request, env: PublicBackendBindings, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return await injectPublicBackendConfig(normalized, env);
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {
