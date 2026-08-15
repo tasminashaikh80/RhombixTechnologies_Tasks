@@ -51,14 +51,14 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 async function injectPublicBackendConfig(
   response: Response,
-  env: PublicBackendBindings,
+  env: PublicBackendBindings | undefined,
 ): Promise<Response> {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("text/html")) return response;
 
-  const supabaseUrl = env.SUPABASE_URL ?? process.env["SUPABASE_URL"];
+  const supabaseUrl = env?.SUPABASE_URL ?? process.env["SUPABASE_URL"];
   const publishableKey =
-    env.SUPABASE_PUBLISHABLE_KEY ?? process.env["SUPABASE_PUBLISHABLE_KEY"];
+    env?.SUPABASE_PUBLISHABLE_KEY ?? process.env["SUPABASE_PUBLISHABLE_KEY"];
   if (!supabaseUrl || !publishableKey) return response;
 
   const config = JSON.stringify({
@@ -78,7 +78,7 @@ async function injectPublicBackendConfig(
 }
 
 export default {
-  async fetch(request: Request, env: PublicBackendBindings, ctx: unknown) {
+  async fetch(request: Request, env: PublicBackendBindings | undefined, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
